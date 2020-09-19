@@ -1,7 +1,22 @@
 #include "Alloy.h"
-#include <locale.h>
 
 using namespace std;
+
+bool parse(const string &str, int *out) {
+    try {
+        *out = stoi(str);
+        return true;
+    } catch (exception &e) {
+        return false;
+    }
+}
+
+bool iequals(const string &a, const string &b) {
+    return equal(a.begin(), a.end(), b.begin(),
+                 [](char a, char b) {
+                     return tolower(a) == tolower(b);
+                 });
+}
 
 int main() {
     setlocale(LC_ALL, "");
@@ -92,197 +107,234 @@ int main() {
         alloys[i] = alloy;
     }
 
+    int act = 1;
+
     string selectedName;
 
-    printf("\n\nEscolha uma liga: \n");
+    do {
+        printf("\n\nEscolha uma liga: \n");
 
-    for (auto &alloy : alloys) {
-        printf("\n %s", alloy.name.c_str());
-    }
+        for (auto &alloy : alloys) {
+            printf("\n %s", alloy.name.c_str());
+        }
 
-    printf("\n\n");
+        printf("\n\n");
 
-    getline(cin, selectedName);
-
-    bool exist = false;
-
-    for (auto &alloy : ligas) {
-        if (alloy == selectedName)
-            exist = true;
-    }
-
-    while (!exist) {
-        printf("\nLiga invalida, escolha uma liga valida: \n");
         getline(cin, selectedName);
 
+        bool exist = false;
+
         for (auto &alloy : ligas) {
-            if (alloy == selectedName)
+            if (iequals(alloy, selectedName)) {
                 exist = true;
+            }
         }
-    }
 
-    Alloy selected;
-    for (auto &alloy : alloys) {
-        if (alloy.name == selectedName)
-            selected = alloy;
-    }
+        while (!exist) {
+            printf("\nLiga invalida, escolha uma liga valida: \n");
+            getline(cin, selectedName);
 
-    for (size_t i = 0; i < 100; ++i) {
+            for (auto &alloy : ligas) {
+                if (iequals(alloy, selectedName))
+                    exist = true;
+            }
+        }
+
+        Alloy selected;
+        for (auto &alloy : alloys) {
+            if (iequals(alloy.name, selectedName))
+                selected = alloy;
+        }
+
+        for (size_t i = 0; i < 100; ++i) {
+            printf("\n");
+        }
+
+        printf("\n%s - Materiais\n", selected.name.c_str());
+
+        vector<string> mat = selected.getMaterialsName();
+
+        for (auto const &material: mat) {
+            printf("\n%s", material.c_str());
+        }
+
         printf("\n");
-    }
 
-    printf("\n%s - Materiais\n", selected.name.c_str());
+        int ingots;
+        string pars;
 
-    vector<string> mat = selected.getMaterialsName();
+        printf("\nQuantas barras voce deseja fazer ?\n");
+        getline(cin, pars);
 
-    for (auto const &material: mat) {
-        printf("\n%s", material.c_str());
-    }
+        while (!parse(pars, &ingots)) {
+            printf("\nQuantas barras voce deseja fazer ?\n");
+            getline(cin, pars);
+        }
 
-    printf("\n");
+        ingots *= 100;
 
-    unsigned int ingots;
+        int length = mat.size();
 
-    printf("\nQuantas barras voce deseja fazer ?\n");
-    cin >> ingots;
+        int percent[length];
 
-    ingots *= 100;
+        bool stop = false;
 
-    int length = mat.size();
+        for (int i = 0; i < length; ++i) {
+            string s = selected.materials[mat[i]];
 
-    int percent[length];
+            vector<string> sp = selected.split(s, '/');
 
-    bool stop = false;
+            int x[2];
 
-    for (int i = 0; i < length; ++i) {
-        string s = selected.materials[mat[i]];
+            x[0] = stoi(sp[0]);
+            x[1] = stoi(sp[1]);
 
-        vector<string> sp = selected.split(s, '/');
+            switch (i) {
 
-        int x[2];
+                case 1:
+                    if (length == 3) {
+                        int oldX = percent[i - 1];
 
-        x[0] = stoi(sp[0]);
-        x[1] = stoi(sp[1]);
+                        if ((100 - oldX) % 2 == 0) {
+                            percent[1] = (100 - oldX) / 2;
+                            percent[2] = percent[1];
 
-        switch (i) {
+                            stop = true;
 
-            case 1:
-                if (length == 3) {
-                    int oldX = percent[i - 1];
-
-                    if ((100 - oldX) % 2 == 0) {
-                        percent[1] = (100 - oldX) / 2;
-                        percent[2] = percent[1];
-
-                        stop = true;
-
-                        break;
-                    }
-
-                    if (100 - oldX < 50) {
-                        if (100 - oldX >= 40) {
-                            x[0] = (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[1]);
-                        } else {
-                            percent[i] = (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[0]);
-                            continue;
+                            break;
                         }
 
+                        if (100 - oldX < 50) {
+                            if (100 - oldX >= 40) {
+                                x[0] = (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[1]);
+                            } else {
+                                percent[i] =
+                                        (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[0]);
+                                continue;
+                            }
+
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case 2:
-                if (length == 4) {
-                    int sum = (100 - (percent[i - 1]) + 100 - (percent[i - 2]));
+                case 2:
+                    if (length == 4) {
+                        int sum = (100 - (percent[i - 1]) + 100 - (percent[i - 2]));
 
-                    if (sum <= 50 && sum >= 40) {
-                        percent[2] = sum - 25;
-                        percent[3] = 25;
+                        if (sum <= 50 && sum >= 40) {
+                            percent[2] = sum - 25;
+                            percent[3] = 25;
 
-                        stop = true;
+                            stop = true;
 
-                        break;
+                            break;
+                        }
                     }
-                }
-                break;
+                    break;
 
-            default:
-                break;
-        }
-
-        if (stop) break;
-
-        if (i == (length - 1)) {
-            int total = 0;
-
-            for (int j = 1; j < mat.size(); j++) {
-                total += percent[j - 1];
+                default:
+                    break;
             }
 
-            percent[i] = 100 - total;
+            if (stop) break;
 
-            break;
+            if (i == (length - 1)) {
+                int total = 0;
+
+                for (int j = 1; j < mat.size(); j++) {
+                    total += percent[j - 1];
+                }
+
+                percent[i] = 100 - total;
+
+                break;
+            }
+
+            printf("\nQuanto voce ira usar de %s ?\n", mat[i].c_str());
+
+            printf("De: %d por cento A %d por cento\n", x[0], x[1]);
+            getline(cin, pars);
+
+            while (!parse(pars, &percent[i])) {
+                printf("De: %d por cento A %d por cento\n", x[0], x[1]);
+                getline(cin, pars);
+            }
+
+            while (percent[i] < x[0] || percent[i] > x[1]) {
+                printf("\n");
+                printf("Por favor, respeite os limites - De: %d por cento A %d por cento\n", x[0], x[1]);
+
+                getline(cin, pars);
+
+                while (!parse(pars, &percent[i])) {
+                    printf("Por favor, respeite os limites - De: %d por cento A %d por cento\n", x[0], x[1]);
+                    getline(cin, pars);
+                }
+            }
         }
 
-        printf("\nQuanto voce ira usar de %s ?\n", mat[i].c_str());
-
-        printf("De: %d por cento A %d por cento\n", x[0], x[1]);
-        cin >> percent[i];
-
-        while (percent[i] < x[0] || percent[i] > x[1]) {
+        for (size_t i = 0; i < 100; ++i) {
             printf("\n");
-            printf("Por favor, respeite os limites - De: %d por cento A %d por cento\n", x[0], x[1]);
-
-            cin >> percent[i];
         }
-    }
 
-    for (size_t i = 0; i < 100; ++i) {
+        double materials[length];
+
+        for (size_t i = 0; i < length; ++i) {
+            materials[i] = ingots * (percent[i] / 100.0);
+        }
+
+        for (size_t i = 0; i < length; i++) {
+            printf("\nTotal a ser adicionado de %s: %.3lf Unidades", mat[i].c_str(), materials[i]);
+        }
+
         printf("\n");
-    }
 
-    double materials[length];
+        for (size_t i = 0; i < length; ++i) {
+            string name = mat[i];
 
-    for (size_t i = 0; i < length; ++i) {
-        materials[i] = ingots * (percent[i] / 100.0);
-    }
+            if (name.find("Aco") != string::npos || name.find("Bronze") != string::npos ||
+                name.find("Rosa") != string::npos || name.find("Latao") != string::npos) {
 
-    for (size_t i = 0; i < length; i++) {
-        printf("\nTotal a ser adicionado de %s: %.3lf Unidades", mat[i].c_str(), materials[i]);
-    }
+                printf("\nBarra`s de %s %.3lf Unidade`s", name.c_str(), materials[i] / 100.0);
 
-    printf("\n");
+                printf("\n");
+            } else {
+                int values[] = {35, 25, 15, 10};
 
-    for (size_t i = 0; i < length; ++i) {
-        string name = mat[i];
+                int qtd[4];
 
-        if (name.find("Aco") != string::npos || name.find("Bronze") != string::npos ||
-            name.find("Rosa") != string::npos || name.find("Latao") != string::npos) {
-            printf("Barra`s de %s %.3lf Unidade`s", name.c_str(), materials[i] / 100.0);
+                string mnames[] = {"rico", "normal", "pobre", "pepita", "nugget"};
 
-            printf("\n");
-        } else {
-            int values[] = {35, 25, 15, 10};
+                double value = materials[i];
 
-            int qtd[4];
+                for (int z = 0; z < 4; z++) {
+                    qtd[z] = (int) (value / values[z]);
+                    value -= (double) (qtd[z] * values[z]);
+                }
 
-            string mnames[] = {"rico", "normal", "pobre", "pepita", "nugget"};
+                for (int z = 0; z < 4; z++) {
+                    printf("\nMinerio de %s %s %d Unidade`s", selected.mineralName(name).c_str(), mnames[z].c_str(),
+                           qtd[z]);
+                }
 
-            double value = materials[i];
-
-            for (int z = 0; z < 4; z++) {
-                qtd[z] = (int) (value / values[z]);
-                value -= (double) (qtd[z] * values[z]);
+                printf("\n");
             }
+        }
 
-            for (int z = 0; z < 4; z++) {
-                printf("\nMinerio de %s %s %d Unidade`s", selected.mineralName(name).c_str(), mnames[z].c_str(),
-                       qtd[z]);
-            }
+        printf("\nDeseja realizar um novo calculo? 1(Sim) | 2(Nao)\n");
 
+        getline(cin, pars);
+
+        while (!parse(pars, &act)) {
+            printf("\n1(Sim) | 2(Nao)");
+            getline(cin, pars);
+        }
+
+        for (size_t i = 0; i < 100; ++i) {
             printf("\n");
         }
-    }
+
+    } while (act == 1);
 
     printf("\n");
 
