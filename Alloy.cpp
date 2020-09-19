@@ -14,11 +14,11 @@
 
 using namespace std;
 
-vector<string> Alloy::split(const string &str, char delim) {
+vector<string> Alloy::split(const string &str, char delimiter) {
     std::stringstream ss(str);
     string tok;
     vector<string> vec;
-    while (getline(ss, tok, delim)) {
+    while (getline(ss, tok, delimiter)) {
         if (!tok.empty())
             vec.push_back(tok);
     }
@@ -27,18 +27,6 @@ vector<string> Alloy::split(const string &str, char delim) {
 
 void Alloy::addMaterial(const string& materialName, string data) {
     materials[materialName] = move(data);
-}
-
-string Alloy::getMaterials() {
-    string back;
-
-    for (auto const &entry: materials) {
-        vector<string> qtd = split(materials[entry.first], '/');
-
-        back += entry.first + ": de " + qtd[0] + "% A " + qtd[1] + "% \n";
-    }
-
-    return back;
 }
 
 vector<string> Alloy::getMaterialsName() {
@@ -52,9 +40,9 @@ vector<string> Alloy::getMaterialsName() {
 }
 
 string Alloy::mineralName(const string& key) {
-    return correspondente[key];
+    return linked[key];
 }
 
 void Alloy::addMineralName(const string& metal, string mineral) {
-    correspondente[metal] = move(mineral);
+    linked[metal] = move(mineral);
 }

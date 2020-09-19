@@ -11,7 +11,7 @@ bool parse(const string &str, int *out) {
     }
 }
 
-bool iequals(const string &a, const string &b) {
+bool stringEquals(const string &a, const string &b) {
     return equal(a.begin(), a.end(), b.begin(),
                  [](char a, char b) {
                      return tolower(a) == tolower(b);
@@ -125,7 +125,7 @@ int main() {
         bool exist = false;
 
         for (auto &alloy : ligas) {
-            if (iequals(alloy, selectedName)) {
+            if (stringEquals(alloy, selectedName)) {
                 exist = true;
             }
         }
@@ -135,14 +135,14 @@ int main() {
             getline(cin, selectedName);
 
             for (auto &alloy : ligas) {
-                if (iequals(alloy, selectedName))
+                if (stringEquals(alloy, selectedName))
                     exist = true;
             }
         }
 
         Alloy selected;
         for (auto &alloy : alloys) {
-            if (iequals(alloy.name, selectedName))
+            if (stringEquals(alloy.name, selectedName))
                 selected = alloy;
         }
 
@@ -182,7 +182,7 @@ int main() {
         for (int i = 0; i < length; ++i) {
             string s = selected.materials[mat[i]];
 
-            vector<string> sp = selected.split(s, '/');
+            vector<string> sp = Alloy::split(s, '/');
 
             int x[2];
 
@@ -206,10 +206,10 @@ int main() {
 
                         if (100 - oldX < 50) {
                             if (100 - oldX >= 40) {
-                                x[0] = (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[1]);
+                                x[0] = (100 - oldX) - stoi(Alloy::split(selected.materials[mat[i + 1]], '/')[1]);
                             } else {
                                 percent[i] =
-                                        (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[0]);
+                                        (100 - oldX) - stoi(Alloy::split(selected.materials[mat[i + 1]], '/')[0]);
                                 continue;
                             }
 
@@ -321,12 +321,12 @@ int main() {
             }
         }
 
-        printf("\nDeseja realizar um novo calculo? 1(Sim) | 2(Nao)\n");
+        printf("\nDeseja realizar um novo calculo? 1 (Sim) | 2 (Nao)\n");
 
         getline(cin, pars);
 
         while (!parse(pars, &act)) {
-            printf("\n1(Sim) | 2(Nao)");
+            printf("\n1 (Sim) | 2 (Nao)");
             getline(cin, pars);
         }
 

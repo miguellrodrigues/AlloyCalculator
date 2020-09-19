@@ -22,19 +22,18 @@ public:
 
     void addMaterial(const string &name, string data);
 
-    void addMineralName(const string& metal, string mineral);
+    void addMineralName(const string &metal, string mineral);
 
-    string getMaterials();
-
-    string mineralName(const string& key);
+    string mineralName(const string &key);
 
     vector<string> getMaterialsName();
 
-    vector<string> split(const string &str, char delim);
-
-    map<string, string> correspondente;
+    static vector<string> split(const string &str, char delimiter);
 
     map<string, string> materials;
+
+private:
+    map<string, string> linked;
 };
 
 #endif //ALLOYC_ALLOY_H
