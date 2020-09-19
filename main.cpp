@@ -1,0 +1,297 @@
+#include "Alloy.h"
+#include <locale.h>
+
+using namespace std;
+
+int main() {
+    setlocale(LC_ALL, "");
+    string ligas[] = {"Bronze de Bismuto",
+                      "Bronze Corintio",
+                      "Bronze",
+                      "Latao",
+                      "Ouro Rosa",
+                      "Prata de Lei",
+                      "Aco Negro",
+                      "Aco Azul",
+                      "Aco Vermelho"
+    };
+
+    vector<Alloy> alloys;
+
+    for (const string &name : ligas) {
+        Alloy all;
+
+        all.name = name;
+
+        alloys.emplace_back(all);
+    }
+
+    for (size_t i = 0; i < alloys.size(); ++i) {
+        Alloy alloy = alloys[i];
+
+        if (i == 0) {
+            alloy.addMaterial("Cobre", "50/65");
+            alloy.addMaterial("Bismutinita", "10/20");
+            alloy.addMaterial("Zinco", "20/30");
+
+            alloy.addMineralName("Cobre", "Cobre");
+            alloy.addMineralName("Bismutinita", "Bismutinita");
+            alloy.addMineralName("Zinco", "Esfarelita");
+        } else if (i == 1) {
+            alloy.addMaterial("Cobre", "50/70");
+            alloy.addMaterial("Ouro", "10/25");
+            alloy.addMaterial("Prata", "10/25");
+
+            alloy.addMineralName("Cobre", "Cobre");
+            alloy.addMineralName("Ouro", "Ouro");
+            alloy.addMineralName("Prata", "Tetraedita");
+        } else if (i == 2) {
+            alloy.addMaterial("Cobre", "88/92");
+            alloy.addMaterial("Estanho", "8/12");
+
+            alloy.addMineralName("Cobre", "Cobre");
+            alloy.addMineralName("Estanho", "Cassiterita");
+        } else if (i == 3) {
+            alloy.addMaterial("Cobre", "88/92");
+            alloy.addMaterial("Zinco", "8/12");
+
+            alloy.addMineralName("Cobre", "Cobre");
+            alloy.addMineralName("Zinco", "Esfalerita");
+        } else if (i == 4) {
+            alloy.addMaterial("Cobre", "15/30");
+            alloy.addMaterial("Ouro", "70/85");
+
+            alloy.addMineralName("Cobre", "Cobre");
+            alloy.addMineralName("Ouro", "Ouro");
+        } else if (i == 5) {
+            alloy.addMaterial("Cobre", "20/40");
+            alloy.addMaterial("Prata", "60/80");
+
+            alloy.addMineralName("Cobre", "Cobre");
+            alloy.addMineralName("Prata", "Tetraedita");
+        } else if (i == 6) {
+            alloy.addMaterial("Aco", "50/70");
+            alloy.addMaterial("Nickel", "15/25");
+            alloy.addMaterial("Bronze Corintio", "15/25");
+
+            alloy.addMineralName("Nickel", "Garnierita");
+        } else if (i == 7) {
+            alloy.addMaterial("Aco Negro", "50/55");
+            alloy.addMaterial("Bronze de Bismuto", "10/15");
+            alloy.addMaterial("Prata", "10/15");
+            alloy.addMaterial("Aco", "20/25");
+
+            alloy.addMineralName("Prata", "Tetraedita");
+        } else if (i == 8) {
+            alloy.addMaterial("Aco Negro", "50/55");
+            alloy.addMaterial("Ouro Rosa", "10/15");
+            alloy.addMaterial("Latao", "10/15");
+            alloy.addMaterial("Aco", "20/25");
+        }
+
+        alloys[i] = alloy;
+    }
+
+    string selectedName;
+
+    printf("\n\nEscolha uma liga: \n");
+
+    for (auto &alloy : alloys) {
+        printf("\n %s", alloy.name.c_str());
+    }
+
+    printf("\n\n");
+
+    getline(cin, selectedName);
+
+    bool exist = false;
+
+    for (auto &alloy : ligas) {
+        if (alloy == selectedName)
+            exist = true;
+    }
+
+    while (!exist) {
+        printf("\nLiga invalida, escolha uma liga valida: \n");
+        getline(cin, selectedName);
+
+        for (auto &alloy : ligas) {
+            if (alloy == selectedName)
+                exist = true;
+        }
+    }
+
+    Alloy selected;
+    for (auto &alloy : alloys) {
+        if (alloy.name == selectedName)
+            selected = alloy;
+    }
+
+    for (size_t i = 0; i < 100; ++i) {
+        printf("\n");
+    }
+
+    printf("\n%s - Materiais\n", selected.name.c_str());
+
+    vector<string> mat = selected.getMaterialsName();
+
+    for (auto const &material: mat) {
+        printf("\n%s", material.c_str());
+    }
+
+    printf("\n");
+
+    unsigned int ingots;
+
+    printf("\nQuantas barras voce deseja fazer ?\n");
+    cin >> ingots;
+
+    ingots *= 100;
+
+    int length = mat.size();
+
+    int percent[length];
+
+    bool stop = false;
+
+    for (int i = 0; i < length; ++i) {
+        string s = selected.materials[mat[i]];
+
+        vector<string> sp = selected.split(s, '/');
+
+        int x[2];
+
+        x[0] = stoi(sp[0]);
+        x[1] = stoi(sp[1]);
+
+        switch (i) {
+
+            case 1:
+                if (length == 3) {
+                    int oldX = percent[i - 1];
+
+                    if ((100 - oldX) % 2 == 0) {
+                        percent[1] = (100 - oldX) / 2;
+                        percent[2] = percent[1];
+
+                        stop = true;
+
+                        break;
+                    }
+
+                    if (100 - oldX < 50) {
+                        if (100 - oldX >= 40) {
+                            x[0] = (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[1]);
+                        } else {
+                            percent[i] = (100 - oldX) - stoi(selected.split(selected.materials[mat[i + 1]], '/')[0]);
+                            continue;
+                        }
+
+                    }
+                }
+                break;
+
+            case 2:
+                if (length == 4) {
+                    int sum = (100 - (percent[i - 1]) + 100 - (percent[i - 2]));
+
+                    if (sum <= 50 && sum >= 40) {
+                        percent[2] = sum - 25;
+                        percent[3] = 25;
+
+                        stop = true;
+
+                        break;
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        if (stop) break;
+
+        if (i == (length - 1)) {
+            int total = 0;
+
+            for (int j = 1; j < mat.size(); j++) {
+                total += percent[j - 1];
+            }
+
+            percent[i] = 100 - total;
+
+            break;
+        }
+
+        printf("\nQuanto voce ira usar de %s ?\n", mat[i].c_str());
+
+        printf("De: %d por cento A %d por cento\n", x[0], x[1]);
+        cin >> percent[i];
+
+        while (percent[i] < x[0] || percent[i] > x[1]) {
+            printf("\n");
+            printf("Por favor, respeite os limites - De: %d por cento A %d por cento\n", x[0], x[1]);
+
+            cin >> percent[i];
+        }
+    }
+
+    for (size_t i = 0; i < 100; ++i) {
+        printf("\n");
+    }
+
+    double materials[length];
+
+    for (size_t i = 0; i < length; ++i) {
+        materials[i] = ingots * (percent[i] / 100.0);
+    }
+
+    for (size_t i = 0; i < length; i++) {
+        printf("\nTotal a ser adicionado de %s: %.3lf Unidades", mat[i].c_str(), materials[i]);
+    }
+
+    printf("\n");
+
+    for (size_t i = 0; i < length; ++i) {
+        string name = mat[i];
+
+        if (name.find("Aco") != string::npos || name.find("Bronze") != string::npos ||
+            name.find("Rosa") != string::npos || name.find("Latao") != string::npos) {
+            printf("Barra`s de %s %.3lf Unidade`s", name.c_str(), materials[i] / 100.0);
+
+            printf("\n");
+        } else {
+            int values[] = {35, 25, 15, 10};
+
+            int qtd[4];
+
+            string mnames[] = {"rico", "normal", "pobre", "pepita", "nugget"};
+
+            double value = materials[i];
+
+            for (int z = 0; z < 4; z++) {
+                qtd[z] = (int) (value / values[z]);
+                value -= (double) (qtd[z] * values[z]);
+            }
+
+            for (int z = 0; z < 4; z++) {
+                printf("\nMinerio de %s %s %d Unidade`s", selected.mineralName(name).c_str(), mnames[z].c_str(),
+                       qtd[z]);
+            }
+
+            printf("\n");
+        }
+    }
+
+    printf("\n");
+
+    printf("\n");
+    printf("\n");
+    printf("\nEscrito por: Miguel L. Rodrigues");
+    printf("\n");
+
+    system("pause");
+
+    return 0;
+}
