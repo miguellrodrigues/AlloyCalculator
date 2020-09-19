@@ -2,7 +2,7 @@
 
 using namespace std;
 
-bool parse(const string &str, int *out) {
+bool parse(const string &str, unsigned int *out) {
     try {
         *out = stoi(str);
         return true;
@@ -41,10 +41,11 @@ int main() {
         alloys.emplace_back(all);
     }
 
-    for (size_t i = 0; i < alloys.size(); ++i) {
-        Alloy alloy = alloys[i];
+    unsigned int counter = 0;
 
-        if (i == 0) {
+    for (auto &alloy : alloys) {
+
+        if (counter == 0) {
             alloy.addMaterial("Cobre", "50/65");
             alloy.addMaterial("Bismutinita", "10/20");
             alloy.addMaterial("Zinco", "20/30");
@@ -52,7 +53,7 @@ int main() {
             alloy.addMineralName("Cobre", "Cobre");
             alloy.addMineralName("Bismutinita", "Bismutinita");
             alloy.addMineralName("Zinco", "Esfarelita");
-        } else if (i == 1) {
+        } else if (counter == 1) {
             alloy.addMaterial("Cobre", "50/70");
             alloy.addMaterial("Ouro", "10/25");
             alloy.addMaterial("Prata", "10/25");
@@ -60,54 +61,54 @@ int main() {
             alloy.addMineralName("Cobre", "Cobre");
             alloy.addMineralName("Ouro", "Ouro");
             alloy.addMineralName("Prata", "Tetraedita");
-        } else if (i == 2) {
+        } else if (counter == 2) {
             alloy.addMaterial("Cobre", "88/92");
             alloy.addMaterial("Estanho", "8/12");
 
             alloy.addMineralName("Cobre", "Cobre");
             alloy.addMineralName("Estanho", "Cassiterita");
-        } else if (i == 3) {
+        } else if (counter == 3) {
             alloy.addMaterial("Cobre", "88/92");
             alloy.addMaterial("Zinco", "8/12");
 
             alloy.addMineralName("Cobre", "Cobre");
             alloy.addMineralName("Zinco", "Esfalerita");
-        } else if (i == 4) {
+        } else if (counter == 4) {
             alloy.addMaterial("Cobre", "15/30");
             alloy.addMaterial("Ouro", "70/85");
 
             alloy.addMineralName("Cobre", "Cobre");
             alloy.addMineralName("Ouro", "Ouro");
-        } else if (i == 5) {
+        } else if (counter == 5) {
             alloy.addMaterial("Cobre", "20/40");
             alloy.addMaterial("Prata", "60/80");
 
             alloy.addMineralName("Cobre", "Cobre");
             alloy.addMineralName("Prata", "Tetraedita");
-        } else if (i == 6) {
+        } else if (counter == 6) {
             alloy.addMaterial("Aco", "50/70");
             alloy.addMaterial("Nickel", "15/25");
             alloy.addMaterial("Bronze Corintio", "15/25");
 
             alloy.addMineralName("Nickel", "Garnierita");
-        } else if (i == 7) {
+        } else if (counter == 7) {
             alloy.addMaterial("Aco Negro", "50/55");
             alloy.addMaterial("Bronze de Bismuto", "10/15");
             alloy.addMaterial("Prata", "10/15");
             alloy.addMaterial("Aco", "20/25");
 
             alloy.addMineralName("Prata", "Tetraedita");
-        } else if (i == 8) {
+        } else if (counter == 8) {
             alloy.addMaterial("Aco Negro", "50/55");
             alloy.addMaterial("Ouro Rosa", "10/15");
             alloy.addMaterial("Latao", "10/15");
             alloy.addMaterial("Aco", "20/25");
         }
 
-        alloys[i] = alloy;
+        counter++;
     }
 
-    int act = 1;
+    unsigned int act = 1;
 
     string selectedName;
 
@@ -160,7 +161,7 @@ int main() {
 
         printf("\n");
 
-        int ingots;
+        unsigned int ingots;
         string pars;
 
         printf("\nQuantas barras voce deseja fazer ?\n");
@@ -175,7 +176,7 @@ int main() {
 
         int length = mat.size();
 
-        int percent[length];
+        unsigned int percent[length];
 
         bool stop = false;
 
@@ -184,16 +185,15 @@ int main() {
 
             vector<string> sp = Alloy::split(s, '/');
 
-            int x[2];
+            unsigned int x[2];
 
             x[0] = stoi(sp[0]);
             x[1] = stoi(sp[1]);
 
             switch (i) {
-
                 case 1:
                     if (length == 3) {
-                        int oldX = percent[i - 1];
+                        unsigned int oldX = percent[i - 1];
 
                         if ((100 - oldX) % 2 == 0) {
                             percent[1] = (100 - oldX) / 2;
@@ -219,7 +219,7 @@ int main() {
 
                 case 2:
                     if (length == 4) {
-                        int sum = (100 - (percent[i - 1]) + 100 - (percent[i - 2]));
+                        unsigned int sum = (100 - (percent[i - 1]) + 100 - (percent[i - 2]));
 
                         if (sum <= 50 && sum >= 40) {
                             percent[2] = sum - 25;
@@ -239,7 +239,7 @@ int main() {
             if (stop) break;
 
             if (i == (length - 1)) {
-                int total = 0;
+                unsigned int total = 0;
 
                 for (int j = 1; j < mat.size(); j++) {
                     total += percent[j - 1];
