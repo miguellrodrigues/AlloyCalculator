@@ -19,7 +19,6 @@ bool stringEquals(const string &a, const string &b) {
 }
 
 int main() {
-    setlocale(LC_ALL, "");
     string ligas[] = {"Bronze de Bismuto",
                       "Bronze Corintio",
                       "Bronze",
@@ -44,7 +43,6 @@ int main() {
     unsigned int counter = 0;
 
     for (auto &alloy : alloys) {
-
         if (counter == 0) {
             alloy.addMaterial("Cobre", "50/65");
             alloy.addMaterial("Bismutinita", "10/20");
@@ -164,11 +162,11 @@ int main() {
         unsigned int ingots;
         string pars;
 
-        printf("\nQuantas barras voce deseja fazer ?\n");
+        printf("\nQuantas barras voce deseja fazer ? ->  ");
         getline(cin, pars);
 
         while (!parse(pars, &ingots)) {
-            printf("\nQuantas barras voce deseja fazer ?\n");
+            printf("\nQuantas barras voce deseja fazer ? ->  ");
             getline(cin, pars);
         }
 
@@ -250,24 +248,24 @@ int main() {
                 break;
             }
 
-            printf("\nQuanto voce ira usar de %s ?\n", mat[i].c_str());
+            printf("\nQuanto voce ira usar de %s ?\n\n", mat[i].c_str());
 
-            printf("De: %d por cento A %d por cento\n", x[0], x[1]);
+            printf("De: %d por cento A %d por cento ->  ", x[0], x[1]);
             getline(cin, pars);
 
             while (!parse(pars, &percent[i])) {
-                printf("De: %d por cento A %d por cento\n", x[0], x[1]);
+                printf("De: %d por cento A %d por cento ->  ", x[0], x[1]);
                 getline(cin, pars);
             }
 
             while (percent[i] < x[0] || percent[i] > x[1]) {
                 printf("\n");
-                printf("Por favor, respeite os limites - De: %d por cento A %d por cento\n", x[0], x[1]);
+                printf("Por favor, respeite os limites - De: %d por cento A %d por cento ->  ", x[0], x[1]);
 
                 getline(cin, pars);
 
                 while (!parse(pars, &percent[i])) {
-                    printf("Por favor, respeite os limites - De: %d por cento A %d por cento\n", x[0], x[1]);
+                    printf("Por favor, respeite os limites - De: %d por cento A %d por cento ->  ", x[0], x[1]);
                     getline(cin, pars);
                 }
             }

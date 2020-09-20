@@ -25,7 +25,7 @@ vector<string> Alloy::split(const string &str, char delimiter) {
     return vec;
 }
 
-void Alloy::addMaterial(const string& materialName, string data) {
+void Alloy::addMaterial(const string &materialName, string data) {
     materials[materialName] = move(data);
 }
 
@@ -39,10 +39,10 @@ vector<string> Alloy::getMaterialsName() {
     return back;
 }
 
-string Alloy::mineralName(const string& key) {
+string Alloy::mineralName(const string &key) {
     return linked[key];
 }
 
-void Alloy::addMineralName(const string& metal, string mineral) {
+void Alloy::addMineralName(const string &metal, string mineral) {
     linked[metal] = move(mineral);
 }
